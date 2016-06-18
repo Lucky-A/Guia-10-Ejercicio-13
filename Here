@@ -1,0 +1,107 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Guia10Ejercicio13
+{
+    class Program
+    {
+        /*
+        El Centro meteorológico Nacional necesita una solución que le permita registrar la magnitud de
+        los sismos que acontecen diariamente, cada vez que hay un sismo debe de registrarse la
+        magnitud. Al final del día se desea imprimir la magnitud “mediana” de los sismos, la cantidad y
+        porcentaje de sismos “ligeros” arriba de la mediana si los hay o indicar que no los hay.
+        */
+        static void Main(string[] args)
+        {
+            //DECLARACION DE VARIABLES
+            double bandera = 1; 
+            int indice = 0, cuenta=0;
+            double[] magnitud = new double[150];
+
+            //IDENTIFICACION EN PANTALLA
+            Console.WriteLine("AA14092 - Control de sismos del Centro meteorológico Nacional");
+            Console.WriteLine("Autor: Aguilar Aldana, Fidel Antonio GL:33 \n");
+
+            //ENTRADA DE DATOS
+            while (bandera == 1)
+            {
+                Console.Write("\nDigite la magnitud: ");
+                magnitud[indice] = double.Parse(Console.ReadLine());
+                while (magnitud[indice] < 0 || magnitud[indice] > 6.9)
+                {
+                    Console.Write("\n\t\tERROR\tDigite la magnitud: ");
+                    magnitud[indice] = double.Parse(Console.ReadLine());
+                }
+                bandera = ControlBandera("Otro dato?. 1 para Si, 2 para No: ");
+                indice++; cuenta++;
+            }
+
+            //PROCESO Y SALIDA DE DATOS
+            Array.Resize(ref magnitud, cuenta); //REDIMENCIONAMIENTO DEL VECTOR
+            Array.Sort(magnitud); //ORDENAMIENTO DEL VECTOR
+
+            double Mediana = 0;
+            Console.WriteLine("\nSismos registrados:");
+            for (int k = 0; k < magnitud.Length; k++)
+                Console.Write(" -" + magnitud[k]);
+
+            for (int k = 0; k < magnitud.Length; k++)
+            {
+                if (magnitud[k] > 0)
+                {
+                    if (cuenta % 2 == 0) // Luego de contarlos, se necesitar obtener la mitad de dos elementos, se suman ambos, y se dividen entre 2
+                    { double Mediana1 = magnitud[(cuenta / 2) - 1]; double Mediana2 = magnitud[(cuenta / 2)]; Mediana = (Mediana1 + Mediana2) / 2; }
+                    else // Luego de contarlos, simplemente se obtiene la mitad de los elementos
+                    { Mediana = magnitud[(cuenta / 2)]; }
+                }
+            }
+            TipoSismo(Mediana); // a) magnitud mediana
+            SismosLigero(magnitud,Mediana,cuenta); // b) cantidad del sismos livianos y porcentaje
+            Console.ReadKey();
+
+        }
+
+        private static double ControlBandera(string msj)
+        {
+            double valor;
+            Console.Write(msj);
+            valor = double.Parse(Console.ReadLine());
+            while (!(valor==1|| valor ==2))
+            {
+                Console.Write("\nERROR \t"+msj);
+                valor = double.Parse(Console.ReadLine());
+            }
+            return valor;
+        }
+
+        private static void TipoSismo(double mediana)
+        {
+            Console.WriteLine("\n\nLa magnitud mediana es: {0}",mediana);
+            if (mediana < 2) Console.WriteLine("Micro");
+            if (mediana >= 2 && mediana < 4) Console.WriteLine("Menor");
+            if (mediana >= 4 && mediana < 5) Console.WriteLine("Ligero");
+            if (mediana >= 5 && mediana < 6) Console.WriteLine("Moderado");
+            if (mediana >= 6 && mediana < 7) Console.WriteLine("Fuerte");
+        }
+
+        private static void SismosLigero(double[] magnitud, double mediana, int cuenta)
+        {
+            int count = 0;
+            double up_middle;
+            for (int i = 0; i < magnitud.Length; i++)
+            {
+                if (magnitud[i]>mediana && magnitud[i] >= 4 && magnitud[i] < 5)
+                 count++; 
+            }
+            if (count == 0) Console.WriteLine("\n*** No se registraron sismos ligeros arriba de la mediana ***");
+            else Console.WriteLine("\nLa cantidad de sismos ligeros fueron de: {0}",count);
+
+            up_middle = 100/(double)cuenta*(double)count;
+            Console.WriteLine("\nEl porcentaje de sismos ligeros arriba de la mediana es de: {0:##0.00} %",up_middle);
+
+        }
+    }
+}
